@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/navigation";
 import { HeroCarousel } from "@/components/hero-carousel";
+import { HairStrandBackground, FloatingParticles } from "@/components/hair-animation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -7,7 +8,9 @@ import { Scissors, Calendar, MessageCircle, Award, Clock, MapPin, Sparkles, Hear
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen relative">
+      <HairStrandBackground />
+      <FloatingParticles />
       <Navigation />
       
       {/* Hero Section */}
@@ -54,9 +57,9 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="glass-card">
+            <Card className="glass-card animate-fade-in-up hair-strand" style={{ animationDelay: "0.1s" }}>
               <CardContent className="p-6 text-center">
-                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4">
+                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4 animate-pulse-glow">
                   <Award className="h-6 w-6 text-[#fcefd1]" />
                 </div>
                 <h3 className="text-lg font-medium text-[#fcefd1] mb-2">
@@ -68,9 +71,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
+            <Card className="glass-card animate-fade-in-up hair-strand" style={{ animationDelay: "0.2s" }}>
               <CardContent className="p-6 text-center">
-                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4">
+                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4 animate-pulse-glow">
                   <Heart className="h-6 w-6 text-[#fcefd1]" />
                 </div>
                 <h3 className="text-lg font-medium text-[#fcefd1] mb-2">
@@ -82,9 +85,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
+            <Card className="glass-card animate-fade-in-up hair-strand" style={{ animationDelay: "0.3s" }}>
               <CardContent className="p-6 text-center">
-                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4">
+                <div className="h-12 w-12 rounded-full bg-[#44362c] flex items-center justify-center mx-auto mb-4 animate-pulse-glow">
                   <Scissors className="h-6 w-6 text-[#fcefd1]" />
                 </div>
                 <h3 className="text-lg font-medium text-[#fcefd1] mb-2">
