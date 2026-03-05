@@ -2,32 +2,33 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-// Lazy database connection
-let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null;
+// Ensure DATABASE_URL is set
+const databaseUrl = process.env.DATABASE_URL;
 
-function createDb() {
-  if (typeof window !== "undefined") {
-    // Client-side: return mock
-    return {} as ReturnType<typeof drizzle<typeof schema>>;
-  }
-  
-  const databaseUrl = process.env.DATABASE_URL;
-  
-  if (!databaseUrl) {
-    // During build or if not set, throw error only when actually used
-    console.warn("DATABASE_URL not set - using mock for build");
-    return {} as ReturnType<typeof drizzle<typeof schema>>;
-  }
-  
-  const sql = neon(databaseUrl);
-  return drizzle(sql, { schema });
+if (!databaseUrl) {
+  console.error("DATABASE_URL is not set!");
+  throw new Error("DATABASE_URL environment variable is required");
 }
 
-export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
-  get(target, prop, receiver) {
-    if (!dbInstance) {
-      dbInstance = createDb();
-    }
-    return Reflect.get(dbInstance, prop, receiver);
+// Create SQL client with config for serverless
+const sql = neon(databaseUrl, {
+  fetchOptions: {
+    // @ts-ignore - neon types
+    timeout: 10000, // 10 second timeout
   },
 });
+
+// Create drizzle client
+export const db = drizzle(sql, { schema });
+
+// Test connection function
+export async function testConnection() {
+  try {
+    const result = await sql`SELECT NOW()`;
+    console.log("Database connected:", result);
+    return true;
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    return false;
+  }
+}
