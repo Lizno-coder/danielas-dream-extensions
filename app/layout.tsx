@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { ChatWidget } from "@/components/chat-widget";
@@ -7,6 +7,14 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "Danielas Dream Extensions | Professionelle Haarverlängerung",
   description: "Premium Haarverlängerung in München. Über ein Jahrzehnt Erfahrung. Termin vereinbaren für Beratung oder Haarverlängerung.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#110c09",
 };
 
 export default function RootLayout({

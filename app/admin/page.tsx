@@ -12,6 +12,7 @@ import { ChatView } from "./_components/chat-view";
 import { ConsultationsTab } from "./_components/consultations-tab";
 import { AppointmentsTab } from "./_components/appointments-tab";
 import { GalleryTab } from "./_components/gallery-tab";
+import { AdminCalendar } from "./_components/admin-calendar";
 
 const ADMIN_PASSWORD = "DLGZTS10WKBG";
 
@@ -189,50 +190,55 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <h1 className="text-2xl font-light text-[#fcefd1] mb-6">Admin Dashboard</h1>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-[#2a2018] mb-6 flex-wrap h-auto gap-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1]">Übersicht</TabsTrigger>
-            <TabsTrigger value="chats" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1]">
-              Chats {stats && stats.unreadMessages > 0 && <Badge className="ml-1 bg-red-500 text-white">{stats.unreadMessages}</Badge>}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="bg-[#2a2018] mb-6 flex-wrap h-auto gap-1 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">Übersicht</TabsTrigger>
+            <TabsTrigger value="calendar" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">Kalender</TabsTrigger>
+            <TabsTrigger value="chats" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">
+              Chats {stats && stats.unreadMessages > 0 && <Badge className="ml-1 bg-red-500 text-white text-xs">{stats.unreadMessages}</Badge>}
             </TabsTrigger>
-            <TabsTrigger value="consultations" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1]">
-              Beratungen {stats && stats.pendingConsultations > 0 && <Badge className="ml-1 bg-yellow-500 text-black">{stats.pendingConsultations}</Badge>}
+            <TabsTrigger value="consultations" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">
+              Beratungen {stats && stats.pendingConsultations > 0 && <Badge className="ml-1 bg-yellow-500 text-black text-xs">{stats.pendingConsultations}</Badge>}
             </TabsTrigger>
-            <TabsTrigger value="appointments" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1]">Termine</TabsTrigger>
-            <TabsTrigger value="gallery" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1]">Galerie</TabsTrigger>
+            <TabsTrigger value="appointments" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">Termine</TabsTrigger>
+            <TabsTrigger value="gallery" className="data-[state=active]:bg-[#44362c] data-[state=active]:text-[#fcefd1] text-xs sm:text-sm px-2 sm:px-3">Galerie</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <Card className="glass-card cursor-pointer hover:bg-[#1a1410]" onClick={() => setActiveTab("chats")}>
-                <CardContent className="p-4 text-center">
-                  <MessageCircle className="h-8 w-8 text-[#fcefd1]/60 mx-auto mb-2" />
-                  <p className="text-3xl font-light text-[#fcefd1]">{stats?.unreadMessages || 0}</p>
-                  <p className="text-sm text-[#fcefd1]/60">Ungelesene Nachrichten</p>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 text-[#fcefd1]/60 mx-auto mb-2" />
+                  <p className="text-2xl sm:text-3xl font-light text-[#fcefd1]">{stats?.unreadMessages || 0}</p>
+                  <p className="text-xs sm:text-sm text-[#fcefd1]/60">Ungelesene Nachrichten</p>
                 </CardContent>
               </Card>
               <Card className="glass-card cursor-pointer hover:bg-[#1a1410]" onClick={() => setActiveTab("consultations")}>
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-8 w-8 text-[#fcefd1]/60 mx-auto mb-2" />
-                  <p className="text-3xl font-light text-[#fcefd1]">{stats?.pendingConsultations || 0}</p>
-                  <p className="text-sm text-[#fcefd1]/60">Ausstehende Beratungen</p>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-[#fcefd1]/60 mx-auto mb-2" />
+                  <p className="text-2xl sm:text-3xl font-light text-[#fcefd1]">{stats?.pendingConsultations || 0}</p>
+                  <p className="text-xs sm:text-sm text-[#fcefd1]/60">Ausstehende Beratungen</p>
                 </CardContent>
               </Card>
               <Card className="glass-card cursor-pointer hover:bg-[#1a1410]" onClick={() => setActiveTab("appointments")}>
-                <CardContent className="p-4 text-center">
-                  <Calendar className="h-8 w-8 text-[#fcefd1]/60 mx-auto mb-2" />
-                  <p className="text-3xl font-light text-[#fcefd1]">{stats?.upcomingAppointments || 0}</p>
-                  <p className="text-sm text-[#fcefd1]/60">Kommende Termine</p>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-[#fcefd1]/60 mx-auto mb-2" />
+                  <p className="text-2xl sm:text-3xl font-light text-[#fcefd1]">{stats?.upcomingAppointments || 0}</p>
+                  <p className="text-xs sm:text-sm text-[#fcefd1]/60">Kommende Termine</p>
                 </CardContent>
               </Card>
               <Card className="glass-card">
-                <CardContent className="p-4 text-center">
-                  <Users className="h-8 w-8 text-[#fcefd1]/60 mx-auto mb-2" />
-                  <p className="text-3xl font-light text-[#fcefd1]">{stats?.totalUsers || 0}</p>
-                  <p className="text-sm text-[#fcefd1]/60">Registrierte Nutzer</p>
+                <CardContent className="p-3 sm:p-4 text-center">
+                  <Users className="h-6 w-6 sm:h-8 sm:w-8 text-[#fcefd1]/60 mx-auto mb-2" />
+                  <p className="text-2xl sm:text-3xl font-light text-[#fcefd1]">{stats?.totalUsers || 0}</p>
+                  <p className="text-xs sm:text-sm text-[#fcefd1]/60">Registrierte Nutzer</p>
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <AdminCalendar />
           </TabsContent>
           
           <TabsContent value="chats">

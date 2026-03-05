@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Upload, Save, User, Calendar, MapPin, Phone, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { UserAvailabilityCalendar } from "@/components/user-availability-calendar";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
   id: number;
@@ -25,7 +27,8 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,8 +44,12 @@ export default function SettingsPage() {
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      return;
+    }
     if (user) fetchProfile();
-  }, [user]);
+  }, [user, authLoading, router]);
 
   const fetchProfile = async () => {
     try {
@@ -136,7 +143,7 @@ export default function SettingsPage() {
     setUploadingImage(false);
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <main className="min-h-screen bg-[#110c09]">
         <Navigation />
@@ -146,6 +153,8 @@ export default function SettingsPage() {
       </main>
     );
   }
+
+  if (!user) return null;
 
   return (
     <main className="min-h-screen bg-[#110c09]">
@@ -276,7 +285,6 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="availability">
-            {/* User Availability Calendar wird hier eingebunden */}
             <UserAvailabilityCalendar />
           </TabsContent>
         </Tabs>
@@ -285,21 +293,4 @@ export default function SettingsPage() {
   );
 }
 
-// Placeholder für User Availability Component
-function UserAvailabilityCalendar() {
-  return (
-    <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="text-[#fcefd1]">Deine Verfügbarkeit</CardTitle>
-        <CardDescription className="text-[#fcefd1]/60">
-          Trage ein, wann du generell Zeit hast für Termine
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p className="text-[#fcefd1]/60 text-center py-8">
-          Kalender-Funktion wird geladen...
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
+

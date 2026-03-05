@@ -2,6 +2,18 @@
 
 import { useEffect, useRef } from "react";
 
+interface HairBundle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+  opacity: number;
+  swaySpeed: number;
+  swayAmount: number;
+  strandCount: number;
+}
+
 export function HairStrandBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -19,65 +31,82 @@ export function HairStrandBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Hair strand properties
-    const strands: Array<{
-      x: number;
-      y: number;
-      length: number;
-      angle: number;
-      speed: number;
-      amplitude: number;
-      color: string;
-      thickness: number;
-    }> = [];
-
-    // Create strands
-    const strandCount = window.innerWidth < 768 ? 15 : 25;
-    for (let i = 0; i < strandCount; i++) {
-      strands.push({
+    // Create hair bundles (looks like strands of hair grouped together)
+    const bundles: HairBundle[] = [];
+    const bundleCount = window.innerWidth < 768 ? 8 : 12;
+    
+    for (let i = 0; i < bundleCount; i++) {
+      bundles.push({
         x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        length: 100 + Math.random() * 200,
-        angle: Math.random() * Math.PI * 2,
-        speed: 0.001 + Math.random() * 0.002,
-        amplitude: 20 + Math.random() * 30,
-        color: `rgba(252, 239, 209, ${0.03 + Math.random() * 0.05})`,
-        thickness: 1 + Math.random() * 2,
+        y: canvas.height + Math.random() * 200, // Start below screen
+        width: 30 + Math.random() * 50, // Width of hair bundle
+        height: 200 + Math.random() * 300, // Length
+        color: `rgba(252, 239, 209, ${0.03 + Math.random() * 0.04})`,
+        opacity: 0.03 + Math.random() * 0.04,
+        swaySpeed: 0.0005 + Math.random() * 0.001,
+        swayAmount: 10 + Math.random() * 20,
+        strandCount: 5 + Math.floor(Math.random() * 8),
       });
     }
 
     let time = 0;
     let animationId: number;
 
+    const drawHairBundle = (bundle: HairBundle) => {
+      const sway = Math.sin(time * bundle.swaySpeed + bundle.x) * bundle.swayAmount;
+      
+      // Draw multiple strands in the bundle
+      for (let s = 0; s < bundle.strandCount; s++) {
+        const strandOffset = (s / bundle.strandCount - 0.5) * bundle.width;
+        const individualSway = Math.sin(time * bundle.swaySpeed * 1.5 + s) * 5;
+        
+        ctx.beginPath();
+        ctx.strokeStyle = bundle.color;
+        ctx.lineWidth = 1 + Math.random() * 0.5;
+        ctx.lineCap = "round";
+        
+        // Draw wavy hair strand from bottom to top
+        const startX = bundle.x + strandOffset;
+        const startY = bundle.y;
+        
+        ctx.moveTo(startX, startY);
+        
+        // Create wavy line upward
+        const segments = 20;
+        for (let i = 1; i <= segments; i++) {
+          const progress = i / segments;
+          const waveX = Math.sin(progress * Math.PI * 2 + time * 0.001 + s) * (5 * progress);
+          const currentX = startX + sway * progress + waveX + individualSway * progress;
+          const currentY = startY - bundle.height * progress;
+          
+          ctx.lineTo(currentX, currentY);
+        }
+        
+        ctx.stroke();
+      }
+      
+      // Draw connecting line at bottom (hair tie/bundle effect)
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(68, 54, 44, ${bundle.opacity * 2})`;
+      ctx.lineWidth = 3;
+      ctx.moveTo(bundle.x - bundle.width / 2, bundle.y);
+      ctx.lineTo(bundle.x + bundle.width / 2, bundle.y);
+      ctx.stroke();
+    };
+
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += 0.016;
+      time += 16;
 
-      strands.forEach((strand) => {
-        ctx.beginPath();
-        ctx.strokeStyle = strand.color;
-        ctx.lineWidth = strand.thickness;
-        ctx.lineCap = "round";
-
-        const startX = strand.x;
-        const startY = strand.y;
-
-        // Draw wavy hair strand
-        for (let i = 0; i <= strand.length; i += 5) {
-          const progress = i / strand.length;
-          const wave = Math.sin(time * strand.speed * 1000 + progress * Math.PI * 2) * strand.amplitude * progress;
-          
-          const x = startX + Math.cos(strand.angle) * i + wave * Math.cos(strand.angle + Math.PI / 2);
-          const y = startY + Math.sin(strand.angle) * i + wave * Math.sin(strand.angle + Math.PI / 2);
-
-          if (i === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
+      bundles.forEach((bundle) => {
+        // Slowly move bundles up and reset
+        bundle.y -= 0.2;
+        if (bundle.y < -bundle.height) {
+          bundle.y = canvas.height + 100;
+          bundle.x = Math.random() * canvas.width;
         }
-
-        ctx.stroke();
+        
+        drawHairBundle(bundle);
       });
 
       animationId = requestAnimationFrame(animate);
@@ -95,24 +124,24 @@ export function HairStrandBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.8 }}
     />
   );
 }
 
-// Floating particles for extra effect
-export function FloatingParticles() {
+// Floating sparkles for magical effect
+export function FloatingSparkles() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(15)].map((_, i) => (
         <div
           key={i}
-          className="absolute w-1 h-1 bg-[#fcefd1]/10 rounded-full animate-float"
+          className="absolute w-1 h-1 bg-[#fcefd1]/20 rounded-full"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
+            animation: `float ${15 + Math.random() * 10}s linear infinite`,
             animationDelay: `${Math.random() * 5}s`,
-            animationDuration: `${10 + Math.random() * 10}s`,
           }}
         />
       ))}
