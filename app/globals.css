@@ -1,0 +1,116 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.75rem;
+  
+  /* Danielas Dream Extensions Farbpalette */
+  --dark: #110c09;
+  --brown: #44362c;
+  --light: #fcefd1;
+  --light-rgb: 252, 239, 209;
+  --brown-rgb: 68, 54, 44;
+  --dark-rgb: 17, 12, 9;
+  
+  /* Shadcn Theme Mapping */
+  --background: #110c09;
+  --foreground: #fcefd1;
+  --card: #1a1410;
+  --card-foreground: #fcefd1;
+  --popover: #1a1410;
+  --popover-foreground: #fcefd1;
+  --primary: #fcefd1;
+  --primary-foreground: #110c09;
+  --secondary: #44362c;
+  --secondary-foreground: #fcefd1;
+  --muted: #2a2018;
+  --muted-foreground: #c4b5a0;
+  --accent: #44362c;
+  --accent-foreground: #fcefd1;
+  --destructive: #dc2626;
+  --border: rgba(252, 239, 209, 0.15);
+  --input: rgba(252, 239, 209, 0.1);
+  --ring: #fcefd1;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-[#110c09] text-[#fcefd1] antialiased;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#fcefd1] to-[#c4b5a0];
+  }
+  
+  .glass {
+    @apply bg-[#110c09]/80 backdrop-blur-md border border-[#fcefd1]/10;
+  }
+  
+  .glass-card {
+    @apply bg-[#1a1410]/90 backdrop-blur-sm border border-[#fcefd1]/10 rounded-xl;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #110c09;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #44362c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a4a3c;
+}
+
+/* Selection */
+::selection {
+  background: rgba(252, 239, 209, 0.2);
+  color: #fcefd1;
+}
