@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { users, messages, consultationSlots, appointments } from "@/lib/db/schema";
 import { eq, ne, and, gte, count } from "drizzle-orm";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("auth-token")?.value;
-    await requireAdmin(token);
+    
+    if (!token) {
+      return NextResponse.json({ error: "Nicht authentifiziert" }, { status: 401 });
+    }
+
+    const payload = await verifyAuth(token);
+    if (!payload || payload.role !== "admin") {
+      return NextResponse.json({ error: "Admin-Zugriff erforderlich" }, { status: 403 });
+    }
 
     // Get unread messages count
     const unreadMessages = await db
@@ -45,16 +53,16 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       stats: {
-        unreadMessages: unreadMessages[0]?.count || 0,
-        pendingConsultations: pendingConsultations[0]?.count || 0,
-        upcomingAppointments: upcomingAppointments[0]?.count || 0,
-        totalUsers: totalUsers[0]?.count || 0,
+        unreadMessages: Number(unreadMessages[0]?.count) || 0,
+        pendingConsultations: Number(pendingConsultations[0]?.count) || 0,
+        upcomingAppointments: Number(upcomingAppointments[0]?.count) || 0,
+        totalUsers: Number(totalUsers[0]?.count) || 0,
       },
     });
   } catch (error) {
     console.error("Admin stats error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Ein Fehler ist aufgetreten" },
+      { error: "Server-Fehler", details: error instanceof Error ? error.message : "Unknown" },
       { status: 500 }
     );
   }

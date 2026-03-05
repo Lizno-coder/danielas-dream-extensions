@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || "your-secret-key");
+const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || "danielas-dream-secret-key-2026");
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,38 +21,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Find user
     const normalizedEmail = email.toLowerCase().trim();
-    console.log("Searching for user:", normalizedEmail);
     
     const user = await db.query.users.findFirst({
       where: eq(users.email, normalizedEmail),
     });
 
-    console.log("User found:", user ? { id: user.id, email: user.email, hasPassword: !!user.password } : "Not found");
+    console.log("User lookup:", { found: !!user, email: normalizedEmail });
 
     if (!user) {
       return NextResponse.json(
-        { error: "Ungültige Anmeldedaten", debug: "User not found" },
+        { error: "Ungültige Anmeldedaten" },
         { status: 401 }
       );
     }
 
     if (!user.password) {
       return NextResponse.json(
-        { error: "Ungültige Anmeldedaten", debug: "No password set" },
+        { error: "Passwort nicht gesetzt" },
         { status: 401 }
       );
     }
 
-    // Verify password
-    console.log("Comparing passwords...");
     const isValid = await bcrypt.compare(password, user.password);
-    console.log("Password valid:", isValid);
+    console.log("Password check:", isValid);
     
     if (!isValid) {
       return NextResponse.json(
-        { error: "Ungültige Anmeldedaten", debug: "Password mismatch" },
+        { error: "Ungültige Anmeldedaten" },
         { status: 401 }
       );
     }
@@ -67,18 +63,20 @@ export async function POST(req: NextRequest) {
       .setExpirationTime("7d")
       .sign(JWT_SECRET);
 
-    // Set cookie
-    cookies().set("auth-token", token, {
+    // Set cookie - WICHTIG für Production!
+    const cookieStore = cookies();
+    cookieStore.set("auth-token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true, // Immer true in Production
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
-    console.log("Login successful for:", user.email);
+    console.log("Login success:", user.email);
 
     return NextResponse.json({
+      success: true,
       user: {
         id: user.id,
         email: user.email,
@@ -89,7 +87,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Ein Fehler ist aufgetreten", debug: error instanceof Error ? error.message : "Unknown error" },
+      { error: "Server-Fehler" },
       { status: 500 }
     );
   }
