@@ -1,6 +1,6 @@
 import { Navigation } from "@/components/navigation";
 import { HeroCarousel } from "@/components/hero-carousel";
-import { HairStrandBackground, FloatingParticles } from "@/components/hair-animation";
+import { HairStrandBackground, FloatingSparkles } from "@/components/hair-animation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="min-h-screen relative">
       <HairStrandBackground />
-      <FloatingParticles />
+      <FloatingSparkles />
       <Navigation />
       
       {/* Hero Section */}
